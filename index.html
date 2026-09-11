@@ -489,7 +489,7 @@ h1.title em{color:var(--brass); font-style:italic; font-weight:700;}
   align-items:start;
   min-height:70vh;
 }
-@media(max-width:880px){ .wrap{grid-template-columns:1fr;} }
+@media(max-width:880px){.wrap{grid-template-columns:1fr;}}
 
 /* ===== RAIL / TIMELINE ===== */
 .rail{
@@ -704,6 +704,17 @@ footer{
 #notePanel .np-foot{ margin-top:8px; }
 #notePanel .np-copy{ width:100%; padding:7px; background:#241d13; color:#c9a95e; border:1px solid #5a4a2e; border-radius:6px; cursor:pointer; font-size:12.5px; }
 #notePanel .np-copy:hover{ background:#2f2415; border-color:#7a5f2e; }
+
+/* --- FIX responsive (in coda: vince sull'ordine) --- */
+@media(max-width:880px){
+  .wrap{grid-template-columns:1fr;}
+  .rail{position:static;max-height:60vh;overflow:auto;border-right:none;border-bottom:1px solid rgba(193,154,63,0.28);-webkit-overflow-scrolling:touch;}
+  .detail{padding:26px 6vw 90px;}
+}
+@media(max-width:600px){
+  .rail{max-height:52vh;}
+  .detail{padding:20px 5vw 80px;}
+}
 </style></head>
 <body id="artifacts-component-root-html">
 
@@ -1753,7 +1764,7 @@ p{position:relative;font-size:.95rem;line-height:1.62;margin:0 0 12px;}
       repo, e copia qui sotto i 4 valori che ti genera.
    2) NOTE PRIVATE: visibili SOLO a te. Le sblocchi con #note nell'indirizzo
       (o Ctrl+Alt+N) e la frase segreta qui sotto.                          */
-var GISCUS={repo:"",repoId:"",category:"General",categoryId:"",theme:"dark_dimmed"};
+var GISCUS={repo:"Uptrand1983/Uptrand",repoId:"R_kgDOUTJgcw",category:"General",categoryId:"DIC_kwDOUTJgc84DFMlP",theme:"dark_dimmed"};
 var AC_NOTES_KEY="cremisi-1940";
 /* ======================================================================= */
 var AC_SECTIONS=[['general','Generale'],['sec:situazione','Situazione'],['sec:alfa','Linea Alfa'],['sec:archi','Archi'],['sec:siren','Organigramma']];
@@ -1772,7 +1783,7 @@ function acPublicSection(term,label){
     s.setAttribute('data-repo',GISCUS.repo);s.setAttribute('data-repo-id',GISCUS.repoId);
     s.setAttribute('data-category',GISCUS.category||'General');s.setAttribute('data-category-id',GISCUS.categoryId);
     s.setAttribute('data-mapping','specific');s.setAttribute('data-term',term);
-    s.setAttribute('data-strict','1');s.setAttribute('data-reactions-enabled','1');s.setAttribute('data-emit-metadata','0');
+    s.setAttribute('data-strict','0');s.setAttribute('data-reactions-enabled','1');s.setAttribute('data-emit-metadata','0');
     s.setAttribute('data-input-position','top');s.setAttribute('data-theme',GISCUS.theme||'dark_dimmed');
     s.setAttribute('data-lang','it');s.setAttribute('crossorigin','anonymous');s.async=true;host.appendChild(s);
   }else{
@@ -1852,21 +1863,3 @@ function acTryUnlock(){var p=prompt('Frase segreta per accedere alle tue note:')
 
 
 </body></html>
-
-<div class="giscus"></div>
-
-<script src="https://giscus.app/client.js"
-        data-repo="Uptrand1983/Uptrand"
-        data-repo-id="R_kgDOUTJgcw"
-        data-category="General"
-        data-category-id="DIC_kwDOUTJgc84DFMlP"
-        data-mapping="pathname"
-        data-strict="0"
-        data-reactions-enabled="1"
-        data-emit-metadata="0"
-        data-input-position="bottom"
-        data-theme="preferred_color_scheme"
-        data-lang="it"
-        crossorigin="anonymous"
-        async>
-</script>
