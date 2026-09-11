@@ -1775,23 +1775,26 @@ function acSet(k,a){_acMem[k]=a;try{localStorage.setItem('ac_cm_'+k,JSON.stringi
 /* ---------- COMMENTI PUBBLICI ---------- */
 function acGiscusReady(){return GISCUS.repo&&GISCUS.repoId&&GISCUS.categoryId;}
 function acPublicSection(term,label){
-  var w=document.createElement('div');w.className='ac-pub-wrap';
-  w.innerHTML='<h3 class="ac-pub-h">Commenti</h3><div class="ac-pub-sub">Lascia un parere pubblico'+(label?' su '+acEsc(label):'')+'.</div>';
-  var host=document.createElement('div');host.className='ac-pub-host';w.appendChild(host);
-  if(acGiscusReady()){
-    var s=document.createElement('script');s.src='https://giscus.app/client.js';
-    s.setAttribute('data-repo',GISCUS.repo);s.setAttribute('data-repo-id',GISCUS.repoId);
-    s.setAttribute('data-category',GISCUS.category||'General');s.setAttribute('data-category-id',GISCUS.categoryId);
-    s.setAttribute('data-mapping','specific');s.setAttribute('data-term',term);
-    s.setAttribute('data-strict','0');s.setAttribute('data-reactions-enabled','1');s.setAttribute('data-emit-metadata','0');
-    s.setAttribute('data-input-position','top');s.setAttribute('data-theme',GISCUS.theme||'dark_dimmed');
-    s.setAttribute('data-lang','it');s.setAttribute('crossorigin','anonymous');s.async=true;host.appendChild(s);
-  }else{
-    host.innerHTML=window.AC_OWNER
-      ?'<div class="ac-pub-note"><b>Commenti pubblici non ancora configurati.</b> Compila l\u2019oggetto <code>GISCUS</code> nel file (repo, repoId, categoryId) seguendo le istruzioni di giscus.app.</div>'
-      :'<div class="ac-pub-note">I commenti saranno presto disponibili.</div>';
-  }
-  return w;
+  var w=document.createElement('div');w.className='ac-pub-wrap';w.setAttribute('data-term',term);
+  var inner='<h3 class="ac-pub-h">Commenti</h3><div class="ac-pub-sub">Lascia un parere pubblico'+(label?' su '+acEsc(label):'')+'.</div>';
+  if(acGiscusReady()){inner+='<div class="ac-pub-host"><div class="giscus"></div></div>';}
+  else{inner+='<div class="ac-pub-host"><div class="ac-pub-note">'+(window.AC_OWNER?'Commenti pubblici non ancora configurati (oggetto GISCUS).':'I commenti saranno presto disponibili.')+'</div></div>';}
+  w.innerHTML=inner;return w;
+}
+function acInjectGiscus(w){
+  if(!acGiscusReady()||!w)return;
+  var host=w.querySelector('.ac-pub-host');if(!host)return;
+  if(host.querySelector('iframe.giscus-frame'))return;
+  var gd=host.querySelector('.giscus');if(!gd){gd=document.createElement('div');gd.className='giscus';host.appendChild(gd);}
+  var term=w.getAttribute('data-term')||'archivio-cremisi';
+  var s=document.createElement('script');s.src='https://giscus.app/client.js';
+  s.setAttribute('data-repo',GISCUS.repo);s.setAttribute('data-repo-id',GISCUS.repoId);
+  s.setAttribute('data-category',GISCUS.category||'General');s.setAttribute('data-category-id',GISCUS.categoryId);
+  s.setAttribute('data-mapping','specific');s.setAttribute('data-term',term);
+  s.setAttribute('data-strict','0');s.setAttribute('data-reactions-enabled','1');s.setAttribute('data-emit-metadata','0');
+  s.setAttribute('data-input-position','top');s.setAttribute('data-theme',GISCUS.theme||'dark_dimmed');
+  s.setAttribute('data-lang','it');s.setAttribute('crossorigin','anonymous');s.async=true;
+  host.appendChild(s);
 }
 /* ---------- NOTE PRIVATE ---------- */
 function acListHTML(a){
@@ -1837,12 +1840,13 @@ function acOpenComments(startKey){if(!window.AC_OWNER)return;
 function acInjectPanel(){
   var panel=document.getElementById('detailPanel');if(!panel)return;if(panel.querySelector('.ac-extras'))return;
   var id=(typeof activeId!=='undefined'&&activeId)?activeId:null;if(!id)return;
-  var code=id;try{var a=(typeof findArc==='function')?findArc(id):null;if(a&&a.code)code=a.code;}catch(e){}
   var box=document.createElement('div');box.className='ac-extras';
-  box.appendChild(acPublicSection('evt-'+id,'questo evento'));
+  var pub=acPublicSection('evt-'+id,'questo evento');box.appendChild(pub);
   if(window.AC_OWNER)box.appendChild(acNotesSection('evt:'+id));
   panel.appendChild(box);
+  if(acGiscusReady())setTimeout(function(){acInjectGiscus(pub);},0);
 }
+
 function acRevealNotes(){window.AC_OWNER=true;
   if(!document.getElementById('ac-fab')){var f=document.createElement('button');f.id='ac-fab';f.className='ac-fab';
     f.innerHTML='\ud83d\udcdd Le mie note';f.title='Note private';f.onclick=function(){acOpenComments('general');};document.body.appendChild(f);}
